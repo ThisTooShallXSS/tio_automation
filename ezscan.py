@@ -1,22 +1,23 @@
+#!/usr/bin/env python
+#
+# This script just takes the scan settings as command line args. You will need to hardcode your API keys and scanner name below.
+# The way the script works is by kicking off a scan and waiting for the results to download them in '.nessus' format.
+# If you launch with '&', it will put it into the background so that you can continue to use the CLI while the scan runs.
+#
 # Requirements: Python 2.7+, Tenable.io API access/secret keys
 #
-# Author: Dan Hewitt (with serious help from Andrew Scott!)
+# Author: ThisTooShallXSS (https://github.com/thistooshallxss)
 #
 #     Check if you have 'pip' installed. If not:
 #         curl "https://bootstrap.pypa.io/get-pip.py" -o "get-pip.py"; python get-pip.py
 #     Then run:
 #         pip install tenable_io
 #
-# This script just takes the scan settings as command line args. You will need to hardcode your API keys and scanner name below.
-# The way the script works is by kicking off a scan and waiting for the results to download them in '.nessus' format.
-# If you launch with '&', it will put it into the background so that you can continue to use the CLI while the scan runs.
-#
 # python ezscan.py 'Example Scan - Basic' 'basic' '172.26.68.0/24' &
 # python ezscan.py 'Example Scan - Shellshock' 'shellshock' '172.26.68.12' &
 # python ezscan.py 'Example Scan - Discovery' 'discovery' '172.26.0.0/16' &
 #
 # Templates: (As of 1/17/17) - Note: Some of these require credentials.
-#
 # asv, wannacry, intelamt, discovery, basic, patch_audit, webapp, malware, mobile, 
 # mdm, compliance, pci, offline, cloud_audit, scap, shellshock, ghost, drown, badlock,
 # shadow_brokers, spectre_meltdown, advanced, agent_advanced, agent_basic, agent_compliance, agent_scap, agent_malware

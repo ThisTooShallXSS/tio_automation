@@ -1,21 +1,24 @@
 #!/usr/bin/env python 
 #
-# Author: Dan Hewitt
-# 
-# Requirements: NNM 5.4+, Python 2.7+, Tenable.io API access/secret keys
+# This script makes use of Nessus Network Monitor (NNM)'s ability to detect new hosts in real-time.
+# When a new host is observed for the first time, a log event 'new-host-alert' is produced.
+# These events can be written to syslog, or a file on disk - For this scripts purpose, the latter.
+# When we see a new host alert from NNM, we can use that to initiate a Nessus scan against that host.
+# Alternatively, you could have this script utilize smtp lib to send out an email notification.
+#
+# Requirements: NNM 5.4+, Python 2.7+, pygtail, Tenable.io API access/secret keys
+#
+# Author: ThisTooShallXSS (https://github.com/thistooshallxss)
 #
 # In order to use the following script, you will need to do the following:
-#
 #     /opt/nnm/bin/nnm --config 'Realtime Events File Size' '1G'
 #     /opt/nnm/bin/nnm --config 'Log Realtime Events To Realtime Log File' 1
 #     /opt/nnm/bin/nnm --config 'Maximum Realtime Log Files' 1
 #
 # To install additional Python libraries, you could use Pip. To auto-install:
-#
 #     curl "https://bootstrap.pypa.io/get-pip.py" -o "get-pip.py"; python get-pip.py
 #
 # And now install the two necessary Python libraries:
-# 
 #     pip install tenable_io
 #     pip install pygtail
 #

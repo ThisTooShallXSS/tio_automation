@@ -1,0 +1,11 @@
+user@dev:~/git/tio_automation$ python tio_api_change_aws_conn.py
+
+Connectors Available:
+0 - AWS Connector  (Status: active)  (ID: e4e309d4-d98d-4eda-987f-d35e65e849a6)
+
+Please indicate the name of the connector you would like to change credentials for:
+ >>> AWS Connector
+Changing authentication tokens for 'AWS Connector'.
+ Please provide your ACCESS key: AKIAINSBR3OVEZQVHSBA
+ Please provide your SECRET key: q9yUXbLcECghMkYX1E9fX3qlgJ1b+S8MbVdjuBC5
+The AWS credentials in Tenable.io have been replaced for "AWS Connector".

@@ -1,17 +1,19 @@
-# Requirements: Python 2.7+, Tenable.io API access/secret keys
-#
-# Author: Dan Hewitt
-#
-#     Check if you have 'pip' installed. If not:
-#         curl "https://bootstrap.pypa.io/get-pip.py" -o "get-pip.py"; python get-pip.py
-#     Then run:
-#         pip install tenable_io
+#!/usr/bin/env python
 #
 # This script attempts to download the reports of existing scans in a variety of formats.
 # Using regex, your call to the script looks for any scans which match the search criteria/regex.
 # The downloaded report files will be saved to the same directory as where the script is ran from.
 # If a specific folder is not mentioned, we will search in the default 'My Scans' folder.
 # If you need to specify an auto-download format, be sure to also provide the folder name.
+#
+# Requirements: Python 2.7+, Tenable.io API access/secret keys
+#
+# Author: ThisTooShallXSS (https://github.com/thistooshallxss)
+#
+#     Check if you have 'pip' installed. If not:
+#         curl "https://bootstrap.pypa.io/get-pip.py" -o "get-pip.py"; python get-pip.py
+#     Then run:
+#         pip install tenable_io
 #
 # ---- EXAMPLES ---- 
 #

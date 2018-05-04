@@ -8,8 +8,9 @@
 # - Doesn't have much error handling, only minimal logging.
 # - No immediate way to know if new creds are successful or not.
 #
-# Author: Dan H
-# Requirements: Python 3.7+
+# Requirements: Python 3.7+, requests, pickle
+#
+# Author: ThisTooShallXSS (https://github.com/thistooshallxss)
 #
 # Usage: 
 # - python tio_api_change_aws_conn.py  (For interactive prompts)
@@ -39,8 +40,8 @@ class new_creds(object): # Object for temp storing new AWS creds.
 def save_keys():
     #assumption is that the user keys didn't work or don't exsist
     print("Please provide your Tenable.io User API keys.")
-    access_key = input("Please provide your Access Key (use quotes): ")
-    secret_key = input("Please provide your Secret Key (use quotes): ")
+    access_key = input("Please provide your Tenable.io Access Key (use quotes): ")
+    secret_key = input("Please provide your Tenable.io Secret Key (use quotes): ")
 
     dicts = {"Access Key": access_key, "Secret Key": secret_key}
 
@@ -235,11 +236,8 @@ def main():
         
     if check_valid_connector_by_name(connectors, connector_name):
         new_creds = store_creds(connector_name)
-        #print(cred_obj.name)
 
         change_stored_creds(connectors, new_creds)
-
-
 
 if __name__ == '__main__':
     main()

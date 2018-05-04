@@ -2,10 +2,9 @@
 #
 # This script enumerates all tenable.io scheduled scans.
 #
-# Author: ThisTooShallXSS
-# (https://github.com/thistooshallxss)
-#
 # Requirements: requests, pickle
+#
+# Author: ThisTooShallXSS (https://github.com/thistooshallxss)
 #
 # Usage: 
 # - python report_sched_scans.py 

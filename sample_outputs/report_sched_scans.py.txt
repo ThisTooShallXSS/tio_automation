@@ -1,0 +1,35 @@
+user@dev:~/git/tio_automation$ python report_sched_scans.py
+------
+Name: Daily Lab Scan (Type: remote)
+Schedule: Every Day
+Next Runtime: 08/11/2017 06:30 AM (US/Eastern)
+
+------
+Name: Windows Agent Scan (Type: agent)
+Schedule: Every Day
+Next Runtime: 12/05/2017 02:15 PM (US/Central)
+
+------
+Name: SCCM / WSUS Patch Management Scan (Type: remote)
+Schedule: Every Day
+Next Runtime: 08/11/2017 07:00 AM (America/New_York)
+
+------
+Name: PHP Vuln Webapp (Type: webapp)
+Schedule: Every Week on MO, WE, FR
+Next Runtime: 10/19/2017 10:00 PM (Zulu)
+
+------
+Name: Linux Agent Scan (Type: agent)
+Schedule: Every Day
+Next Runtime: 02/27/2018 04:00 AM (US/Eastern)
+
+------
+Name: Network Infrastructure Basic Scan (Type: remote)
+Schedule: Every 3 Days
+Next Runtime: 04/26/2018 02:00 AM (US/Eastern)
+
+------
+Name: Demo Gruyere WAS Scan (Type: webapp)
+Schedule: Every Day
+Next Runtime: 08/16/2017 05:00 AM (America/New_York)

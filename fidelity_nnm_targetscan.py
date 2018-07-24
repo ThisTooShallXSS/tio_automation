@@ -15,7 +15,7 @@
 # Author: ThisTooShallXSS (https://github.com/thistooshallxss)
 # Requirements: Python 2.7+
 #
-# Usage: 
+# Usage:
 # - python fidelity_nnm_targetscan.py '10.0.0.0/8'
 # - python fidelity_nnm_targetscan.py '192.168.1.0/24'
 # - python fidelity_nnm_targetscan.py (Will find all internal (RFC-1918) IPs without CIDR specified)
@@ -29,7 +29,7 @@ requests.packages.urllib3.disable_warnings()
 
 TIMEFRAME = 90 # Time (in days) that we'll include in the search. 0 for all.
 SCANNER_NAME = 'tnsappliance-123456' # Provide the name of an already linked scanner or group.
-FOLDER_NAME = '' # Provide the name of an already created folder.
+FOLDER_NAME = 'My Scans' # Provide the name of an already created folder.
 
 class nnm_only_assets(object): # Object for temp storing new AWS creds.
     def __init__(self, ipv4, fqdn):
@@ -89,7 +89,7 @@ def create_target_group(ip_addrs, name):
     url = "https://cloud.tenable.com/target-groups"
     headers = grab_headers()
     r = requests.request('POST', url, headers=headers, data=json_payload, verify=False)
-    
+
     if r.status_code != 200:
         print('Status:', r.status_code, 'Problem with the POST request to create target group. Exiting.')
         sys.exit()
@@ -149,12 +149,12 @@ def is_internal(ip):
         [ 3232235520, 4294901760 ], # 192.168.0.0, 255.255.0.0
         [ 2886729728, 4293918720 ], # 172.16.0.0,  255.240.0.0
         [ 167772160,  4278190080 ], # 10.0.0.0,    255.0.0.0
-    ) 
+    )
     for net in private: # If this IP address is an internal IP, proceed.
         if (f & net[1]) == net[0]:
             return True
-    
-    return False            
+
+    return False
 
 def addressInNetwork(ip, net):
     import socket,struct
@@ -193,14 +193,12 @@ def get_folder_id():
     folders = get_data('/folders')["folders"]
     folder_id = 0
 
-    if len(FOLDER_NAME) == 0:
-        FOLDER_NAME = 'My Scans'
-
     for x in range(len(folders)):
         if FOLDER_NAME == folders[x]["name"]:
             folder_id = folders[x]["id"]
             break
-    if folder_id == 0: print("Folder name not found: {}".format(FOLDER_NAME))
+
+    if folder_id == 0: print("Folder name not found: {}\n\nYou can use 'My Scans' as well.".format(FOLDER_NAME))
     return folder_id
 
 def get_template_id(name):
@@ -231,7 +229,7 @@ def run_basic_uncred_scan(target_group_id, timestamp):
     url = "https://cloud.tenable.com/scans"
     headers = grab_headers()
     r = requests.request('POST', url, headers=headers, data=json_payload, verify=False)
-    
+
     if r.status_code != 200:
         print('Status:', r.status_code, 'Problem with the POST request to create the new scan. Exiting.')
         sys.exit()

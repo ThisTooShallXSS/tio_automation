@@ -12,7 +12,7 @@
 # - The argument you pass to the script covers a valid internal network range.
 # - You are authorized to perform scans in your environment.
 #
-# Author: Dan H
+# Author: ThisTooShallXSS (https://github.com/thistooshallxss)
 # Requirements: Python 2.7+
 #
 # Usage: 
@@ -20,6 +20,7 @@
 # - python fidelity_nnm_targetscan.py '192.168.1.0/24'
 # - python fidelity_nnm_targetscan.py (Will find all internal (RFC-1918) IPs without CIDR specified)
 #
+
 import json, requests
 import sys
 import pickle
@@ -27,10 +28,10 @@ import pickle
 requests.packages.urllib3.disable_warnings()
 
 TIMEFRAME = 90 # Time (in days) that we'll include in the search. 0 for all.
-SCANNER_NAME = 'SupportScanner' # Provide the name of an already linked scanner or group.
-FOLDER_NAME = 'API Initiated Scans' # Provide the name of an already created folder.
+SCANNER_NAME = 'tnsappliance-123456' # Provide the name of an already linked scanner or group.
+FOLDER_NAME = '' # Provide the name of an already created folder.
 
-class agent_only_assets(object): # Object for temp storing new AWS creds.
+class nnm_only_assets(object): # Object for temp storing new AWS creds.
     def __init__(self, ipv4, fqdn):
         self.ipv4 = ipv4
         self.fqdn = fqdn
@@ -97,7 +98,7 @@ def create_target_group(ip_addrs, name):
 
     return tgt_group_id
 
-def get_agent_only_ips():
+def get_nnm_only_ips():
 
     uri = '/workbenches/assets?date_range={}&filter.0.quality=set-hasonly&filter.0.filter=sources&filter.0.value=PVS&filter.search_type=and'.format(TIMEFRAME)
     data = get_data(uri)
@@ -115,7 +116,7 @@ def get_agent_only_ips():
 
             #print("IP: {}, FQDN: {}".format(ip_addr, fqdn))
             if check_valid_target(ip_addr):
-                ip_addrs.append(agent_only_assets(ip_addr,fqdn))
+                ip_addrs.append(nnm_only_assets(ip_addr,fqdn))
 
     return ip_addrs
 
@@ -165,15 +166,15 @@ def addressInNetwork(ip, net):
 
     return (ipaddr & mask) == (netaddr & mask)
 
-def create_ip_list(agent_only_ips):
-    # Now, agent_only_ips is an object, with a variable length, each having an IP+fqdn.
+def create_ip_list(nnm_only_ips):
+    # Now, nnm_only_ips is an object, with a variable length, each having an IP+fqdn.
     # We will use this list to create the target group of IPs in Tenable.io
     target_ips = ''
-    for x in range(len(agent_only_ips)):
+    for x in range(len(nnm_only_ips)):
         if x == 0:
-            target_ips = agent_only_ips[x].ipv4
+            target_ips = nnm_only_ips[x].ipv4
         else:
-            target_ips = target_ips + ',' + agent_only_ips[x].ipv4
+            target_ips = target_ips + ',' + nnm_only_ips[x].ipv4
 
     return target_ips
 
@@ -241,29 +242,29 @@ def main():
     import datetime, time
     # First we grab all systems seen only by NNM.
     try:
-        agent_only_ips = get_agent_only_ips()
+        nnm_only_ips = get_nnm_only_ips()
     except:
         print('Could not get asset details from Tenable.io... Quitting')
         sys.exit()
 
-    if len(agent_only_ips) == 0:
+    if len(nnm_only_ips) == 0:
         print("No assets found matching this network range.")
         sys.exit()
-    if len(agent_only_ips) > 0:
+    if len(nnm_only_ips) > 0:
         ts = time.time()
         sml_timestamp = datetime.datetime.fromtimestamp(ts).strftime('%b-%d')
         lrg_timestamp = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M')
         # Ensure that there is at least one IP returned in the query.
         target_group_name = 'Seen Only by NNM (as of {})'.format(lrg_timestamp)
-        target_group_ips = create_ip_list(agent_only_ips)
+        target_group_ips = create_ip_list(nnm_only_ips)
         target_group_id = create_target_group(target_group_ips, target_group_name)
 
-        # Now that we have a list of the IPs only seen by the agent, we can create the target group.
+        # Now that we have a list of the IPs only seen by NNM, we can create the target group.
         if target_group_id > 0:
-            print('Target group created! (Name: {}, # of IPs: {})'.format(target_group_name, len(agent_only_ips)))
+            print('Target group created! (Name: {}, # of IPs: {})'.format(target_group_name, len(nnm_only_ips)))
             print('\nDevices Included:')
-            for x in range(len(agent_only_ips)):
-                print(" - {} ({})".format(agent_only_ips[x].ipv4, agent_only_ips[x].fqdn))
+            for x in range(len(nnm_only_ips)):
+                print(" - {} ({})".format(nnm_only_ips[x].ipv4, nnm_only_ips[x].fqdn))
 
             scan_name = run_basic_uncred_scan(target_group_id, lrg_timestamp)
             if scan_name:

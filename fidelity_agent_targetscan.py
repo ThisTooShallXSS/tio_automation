@@ -13,15 +13,15 @@
 # - You are authorized to perform scans in your environment.
 #
 #
-# Author: Dan H
+# Author: ThisTooShallXSS (https://github.com/thistooshallxss)
 # Requirements: Python 2.7+
 #
 # Usage: 
 # - python fidelity_agent_targetscan.py '10.0.0.0/8'
 # - python fidelity_agent_targetscan.py '192.168.1.0/24'
 # - python fidelity_agent_targetscan.py (Will find all internal (RFC-1918) IPs without CIDR specified)
-
 #
+
 import json, requests
 import sys
 import pickle
@@ -29,8 +29,8 @@ import pickle
 requests.packages.urllib3.disable_warnings()
 
 TIMEFRAME = 90 # Time (in days) that we'll include in the search. 0 for all.
-SCANNER_NAME = 'SupportScanner' # Provide the name of an already linked scanner or group.
-FOLDER_NAME = 'API Initiated Scans' # Provide the name of an already created folder.
+SCANNER_NAME = 'tnsappliance-123456' # Provide the name of an already linked scanner or group.
+FOLDER_NAME = '' # Provide the name of an already created folder.
 
 class agent_only_assets(object): # Object for temp storing new AWS creds.
     def __init__(self, ipv4, fqdn):
@@ -273,3 +273,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

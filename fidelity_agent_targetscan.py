@@ -84,12 +84,12 @@ def get_data(url_mod):
     data = r.json()
     return data
 
-def create_target_group(ip_addrs, name):
+def create_target_group(req_type, ip_addrs, name):
     # This makes the POST request to build the target group on Tenable.io
     json_payload = '{{"name":"{}","members":"{}","type":"system","acls":[{{"permissions":64,"type":"default"}}]}}'.format(name, ip_addrs)
     url = "https://cloud.tenable.com/target-groups"
     headers = grab_headers()
-    r = requests.request('POST', url, headers=headers, data=json_payload, verify=False)
+    r = requests.request(req_type, url, headers=headers, data=json_payload, verify=False)
     
     if r.status_code != 200:
         print('Status:', r.status_code, 'Problem with the POST request to create target group. Exiting.')
@@ -235,7 +235,52 @@ def run_basic_uncred_scan(target_group_id, timestamp):
         print('Status:', r.status_code, 'Problem with the POST request to create the new scan. Exiting.')
         sys.exit()
 
-    return scan_name
+    return True
+
+def tg_name_exists(tg_name):
+    target_groups = get_data('/target-groups')["target_groups"]
+
+    for x in range(len(target_groups)):
+        if tg_name == target_groups[x]["name"]:
+            return True
+
+    return False
+
+def update_existing_tg(tg_id, ip_list, tg_name):
+    create_target_group('PUT', target_group_ips, target_group_name)
+
+   # This makes the POST request to build the target group on Tenable.io
+    json_payload = '{{"name":"{}","members":"{}","type":"system","acls":[{{"permissions":64,"type":"default"}}]}}'.format(name, ip_addrs)
+    url = "https://cloud.tenable.com/target-groups/{}".format(tg_id)            
+    headers = grab_headers()
+    r = requests.request(req_type, url, headers=headers, data=json_payload, verify=False)
+    
+    if r.status_code != 200:
+        print('Status:', r.status_code, 'Problem with the POST request to create target group. Exiting.')
+        sys.exit()
+
+    tgt_group_id = r.json()["id"]
+
+    return tgt_group_id
+
+def create_dynamic_tg(agent_only_ips, timestamp):
+    # Ensure that there is at least one IP returned in the query.
+    target_group_name = 'Scanned Only by Agents (as of {})'.format(timestamp)
+    target_group_ips = create_ip_list(agent_only_ips)
+    target_group_id = tg_name_exists(target_group_name)
+
+    if target_group_id > 0:
+        target_group_id = update_existing_tg(target_group_id, target_group_ips, target_group_name)
+    else:
+        target_group_id = create_target_group('POST', target_group_ips, target_group_name)
+
+    # Now that we have a list of the IPs only seen by the agent, we can create the target group.
+    if target_group_id > 0:
+        print('Target group created! (Name: {}, # of IPs: {})'.format(target_group_name, len(agent_only_ips)))
+        print('\nDevices Included:')
+        for x in range(len(agent_only_ips)):
+            print(" - {} ({})".format(agent_only_ips[x].ipv4, agent_only_ips[x].fqdn))
+
 
 def main():
     import datetime, time
@@ -249,26 +294,14 @@ def main():
     if len(agent_only_ips) == 0:
         print("No assets found matching this network range.")
         sys.exit()
-    if len(agent_only_ips) > 0:
+    else:
         ts = time.time()
-        sml_timestamp = datetime.datetime.fromtimestamp(ts).strftime('%b-%d')
-        lrg_timestamp = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M')
-        # Ensure that there is at least one IP returned in the query.
-        target_group_name = 'Scanned Only by Agents (as of {})'.format(lrg_timestamp)
-        target_group_ips = create_ip_list(agent_only_ips)
-        target_group_id = create_target_group(target_group_ips, target_group_name)
+        #timestamp = datetime.datetime.fromtimestamp(ts).strftime('%b-%d') # Month-Day
+        timestamp = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M') # Year-Month-Day Hr:Min
 
-        # Now that we have a list of the IPs only seen by the agent, we can create the target group.
-        if target_group_id > 0:
-            print('Target group created! (Name: {}, # of IPs: {})'.format(target_group_name, len(agent_only_ips)))
-            print('\nDevices Included:')
-            for x in range(len(agent_only_ips)):
-                print(" - {} ({})".format(agent_only_ips[x].ipv4, agent_only_ips[x].fqdn))
-
-            scan_name = run_basic_uncred_scan(target_group_id, lrg_timestamp)
-            if scan_name:
+        if create_dynamic_tg(agent_only_ips, timestamp):
+            if run_basic_uncred_scan(target_group_id, timestamp):
                 print("\nA basic uncredentialed Nessus scan has been initiated against the new target group.")
 
 if __name__ == '__main__':
     main()
-

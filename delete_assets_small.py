@@ -105,7 +105,7 @@ def addressInNetwork(ip, net):
     return (ipaddr & mask) == (netaddr & mask)
 
 def find_matching_hosts(cidr_str):
-	url = '/workbenches/assets?date_range={}'.format(DATE_RANGE_TO_DELETE)
+    url = '/workbenches/assets?date_range={}'.format(DATE_RANGE_TO_DELETE)
     all_assets = get_data(url)["assets"]
 
     matching_uuids = []

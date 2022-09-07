@@ -13,11 +13,11 @@ try:
 except:
     tag_uuid = input("Please provide your tag UUID:")
 
-if len(tag_uuid) != 35:
+if len(tag_uuid) != 36:
     print("This is an invalid tag UUID!")
     sys.exit()
 
-#Example tag_uuid = "bd464215-5cd5-41b7-b663-fa3cd12c37f"
+#Example tag_uuid = "01ed44a1-4dbf-449a-aff9-fd9969dae1f1"
 
 payload = {
   "filter": {
